@@ -30,5 +30,6 @@ public class Main {
         userAuth.createUser("admin", "1234");
         */
         frmAuth.frmAuth();
+        System.out.println("hi");
     }
 }
