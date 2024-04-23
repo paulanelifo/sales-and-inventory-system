@@ -7,7 +7,7 @@ import java.sql.*;
 public class UserAuth {
     private Connection connection;
     public UserAuth(){
-        connection = Main.getConnection();
+        connection = Fns.getConnection();
     }
     public boolean usernameExists(String username) {
         try {

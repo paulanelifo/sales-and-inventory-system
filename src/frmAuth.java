@@ -57,6 +57,12 @@ public class frmAuth extends javax.swing.JFrame {
             }
         });
 
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
         jLabel1.setText("user:");
 
         jLabel2.setText("pass:");
@@ -100,6 +106,8 @@ public class frmAuth extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
+        jTextField1.getAccessibleContext().setAccessibleDescription("");
+
         getContentPane().add(jPanel1, new java.awt.GridBagConstraints());
 
         pack();
@@ -107,13 +115,17 @@ public class frmAuth extends javax.swing.JFrame {
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Fns.btnLogin(jTextField1.getText(), jPasswordField1.getText(), this);
+        Fns.btnLogin(jTextField1, jPasswordField1, this);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        Fns.btnRegister(jTextField1.getText(), jPasswordField1.getText(), this);
+        Fns.btnRegister(jTextField1, jPasswordField1, this);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -138,6 +150,6 @@ public class frmAuth extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
+    public static javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
