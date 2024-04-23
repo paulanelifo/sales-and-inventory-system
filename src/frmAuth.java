@@ -37,7 +37,8 @@ public class frmAuth extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(400, 300));
+        setMinimumSize(new java.awt.Dimension(1024, 640));
+        setResizable(false);
         setSize(new java.awt.Dimension(400, 300));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
