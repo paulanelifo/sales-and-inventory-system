@@ -54,6 +54,7 @@ public class Fns {
             setLocationRelativeTo(null);
             setVisible(true);
         }};
+    public static dlgCatSelector dialog = new dlgCatSelector(Fns.frmdashboard,true){{dispose();}};
     private static int registerUser(String name, String pass){
         /*
         1 = success
@@ -153,5 +154,63 @@ public class Fns {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    public static void btnCategory(JButton btn){
+        String text = btn.getText();
+        if(text.equals("CATEGORY")){
+            btn.setText("FOOD AND SNACKS");
+            return;
+        }
+        if(text.equals("FOOD AND SNACKS")){
+            btn.setText("BEVERAGES");
+            return;
+        }
+        if(text.equals("BEVERAGES")){
+            btn.setText("CANNED GOODS");
+            return;
+        }
+        if(text.equals("CANNED GOODS")){
+            btn.setText("RICE AND GRAINS");
+            return;
+        }
+        if(text.equals("RICE AND GRAINS")){
+            btn.setText("PERSONAL CARE");
+            return;
+        }
+        if(text.equals("PERSONAL CARE")){
+            btn.setText("HOUSEHOLD ITEMS");
+            return;
+        }
+        if(text.equals("HOUSEHOLD ITEMS")){
+            btn.setText("COOKING INGREDIENTS");
+            return;
+        }
+        if(text.equals("COOKING INGREDIENTS")){
+            btn.setText("SCHOOL SUPPLIES");
+            return;
+        }
+        if(text.equals("SCHOOL SUPPLIES")){
+            btn.setText("MISCELLANEOUS");
+            return;
+        }
+        if(text.equals("MISCELLANEOUS")){
+            btn.setText("FOOD AND SNACKS");
+            return;
+        }
+        
+    }
+    public static void btnCatSelector(){        
+        dialog.setLocationRelativeTo(Fns.frmdashboard);
+        dialog.setVisible(true);
+    }
+    public static void catSelectorButns(java.awt.Dialog cat, JButton btn, JButton btninproductpnl){
+        String selected = btn.getText();        
+        if(!selected.equals("Do not set.")){
+            btninproductpnl.setText(selected);
+        }else{
+            btninproductpnl.setText("CATEGORY");
+        }
+        cat.setVisible(false);
+        cat.dispose();
     }
 }
