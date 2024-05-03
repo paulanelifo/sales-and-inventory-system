@@ -191,52 +191,52 @@ public class dlgCatSelector extends java.awt.Dialog {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton1, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton1, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton2, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton2, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton3, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton3, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton4, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton4, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton5, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton5, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton6, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton6, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton7, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton7, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton8, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton8, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton9, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton9, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // TODO add your handling code here:
-        Fns.catSelectorButns(this, jButton10, pnlProduct.jButton1);
+        Fns.catSelectorButns(this, jButton10, dlgSaveAddProduct.jButton1);
     }//GEN-LAST:event_jButton10ActionPerformed
 
     /**

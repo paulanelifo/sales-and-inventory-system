@@ -118,6 +118,7 @@ public class frmDashboard extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TOD// add your handling code here:
         // Create an instance of pnlProduct
+        jPanel2.removeAll();
         pnlProduct productPanel = new pnlProduct();
 
         // Add pnlProduct to jPanel2
