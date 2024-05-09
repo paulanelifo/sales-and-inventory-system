@@ -24,46 +24,163 @@ import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.Random;
+import javax.swing.table.TableRowSorter;
 public class Fns {
     
     
     //test codes
-    private static DefaultTableModel model;    
-    public static void populateTable(JTable table, String tablename) {
-        model = (DefaultTableModel) table.getModel(); // Initialize model
-
-        String query = "SELECT * FROM "+tablename;
-
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
-
-            // Clear existing data
-            model.setRowCount(0);
-            model.setColumnCount(0);
-
-            // Get metadata
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            // Add columns to table model
-            for (int i = 1; i <= columnCount; i++) {
-                model.addColumn(metaData.getColumnName(i));
+    
+    public static void btnDeleteSelectedRow(JTable table) {
+        //change the frmDashboard to whatever the dashboard frame is named
+        int selectedRowIndex = table.getSelectedRow();  
+        if (selectedRowIndex != -1) {
+            int confirmation = JOptionPane.showConfirmDialog(frmdashboard, "Are you sure you want to delete this?");      
+            if (confirmation == JOptionPane.YES_OPTION){
+                // Get the value of the primary key column (assuming it's the first column)
+                Object primaryKeyValue = table.getValueAt(selectedRowIndex, 0);
+                // Delete row from the database
+                deleteRowFromDatabase(primaryKeyValue);
+                // Remove row from JTable
+                ((DefaultTableModel) table.getModel()).removeRow(selectedRowIndex);
             }
-
-            // Add rows to table model
-            while (resultSet.next()) {
-                Object[] rowData = new Object[columnCount];
-                for (int i = 1; i <= columnCount; i++) {
-                    rowData[i - 1] = resultSet.getObject(i);
-                }
-                model.addRow(rowData);
-            }
-
+        }
+    }
+    public static void deleteRowFromDatabase(Object primaryKeyValue) {
+        // Assuming you have a method to establish a connection and execute SQL DELETE statement
+        try (
+             Statement statement = connection.createStatement()) {
+            String deleteQuery = "DELETE FROM products WHERE id = '" + primaryKeyValue + "'";
+            statement.executeUpdate(deleteQuery);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    public static void displayRowContent(Object primaryKeyValue) {
+        try (Statement statement = connection.createStatement()) {
+            String query = "SELECT * FROM products WHERE id = '" + primaryKeyValue + "'";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            // Assuming you have a method to get column names
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            
+            // Print row data
+            if (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(resultSet.getObject(i) + "\t");
+                }
+                System.out.println();
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void edit(
+            JTable table,
+            JFrame frame,
+            JTextField tfname,
+            JButton btncat,
+            JTextField tfqty,
+            JTextField tfcost,
+            JTextField tfsell,
+            JTextField tfbrand,
+            JTextField tfLST){
+        try (Statement statement = connection.createStatement()) {
+            Object primaryKeyValue = Fns.getid(table);
+            String query = "SELECT * FROM products WHERE id = '" + primaryKeyValue + "'";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            // Assuming you have a method to get column names
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            
+            // Print row data            
+            if (resultSet.next()) {
+                String srs = "";
+                for (int i = 1; i <= columnCount; i++) {
+                    //System.out.print(resultSet.getObject(i) + "\t");
+                    srs = String.valueOf(resultSet.getObject(i));
+                    switch(i){
+                        case 2: tfname.setText(srs);break;
+                        case 3: btncat.setText(srs);break;
+                        case 4: tfqty.setText(srs);break;
+                        case 5: tfcost.setText(srs);break;
+                        case 6: tfsell.setText(srs);break;
+                        case 7: tfbrand.setText(srs);break;
+                        case 8: tfLST.setText(srs);break;
+                        default: System.out.println("wahapen");break;
+                    }
+                }
+                System.out.println();
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void btnEditProd(JFrame frame){
+        editing = true;
+        
+        enableQtyEdit(editing);
+        
+        dlgAddProd.setLocationRelativeTo(frame);
+        dlgAddProd.setVisible(true);
+    }
+    
+    public static void btnUpdateProd(
+            JTable table,
+            java.awt.Dialog theself,
+            JFrame frame,
+            JTextField tfname,
+            JButton btncat,
+            JTextField tfqty,
+            JTextField tfcost,
+            JTextField tfsell,
+            JTextField tfbrand,
+            JTextField tfLST
+            ){
+        Object id = getid(table);
+        String sid = String.valueOf(id);
+        String name = tfname.getText();
+        String category = btncat.getText();if(category.equals("CATEGORY")){category = "";}
+        String qty = tfqty.getText();if(!cannum(qty)){qty = "0";}
+        String cost = tfcost.getText();if(!cannum(cost)){cost = "0";}
+        String sell = tfsell.getText();if(!cannum(sell)){sell = "0";}
+        String brand = tfbrand.getText();
+        String LST = tfLST.getText();if(!cannum(LST)){LST = "0";}
+        
+        if(name.equals("")){
+            JOptionPane.showMessageDialog(frame, "Please enter product name.");
+            return;
+        }
+        
+        try{
+            String updateSQL = "UPDATE products SET name = ?, category = ?, qty = ?, cost = ?, sell = ?, brand = ?, LST = ? WHERE id = ?";
+            PreparedStatement pps = connection.prepareStatement(updateSQL);
+            pps.setString(1, name);
+            pps.setString(2, category);
+            pps.setString(3, qty);
+            pps.setString(4, cost);
+            pps.setString(5, sell);
+            pps.setString(6, brand);
+            pps.setString(7, LST);
+            pps.setString(8, sid);
+            
+            int rowsAffected = pps.executeUpdate();
+            pps.close();
+            
+            JOptionPane.showMessageDialog(theself, "Updated Successfully!");
+            theself.dispose();
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+    
+    //trash codes
     
     public static StringBuilder cho = new StringBuilder();// = new StringBuilder();    
     public static void paul(){
@@ -119,6 +236,7 @@ public class Fns {
 
         return jPanel1;
     }
+    /*
     public static void btnread(){
         cho.append("he");
         huehue panel = new huehue(cho.toString());
@@ -127,6 +245,8 @@ public class Fns {
         pnlProduct.jPanel2.revalidate();
         pnlProduct.jPanel2.repaint();
     }
+    
+    */
     
     
     
@@ -170,6 +290,47 @@ public class Fns {
     public static dlgSaveAddProduct dlgAddProd = new dlgSaveAddProduct(Fns.frmdashboard,true){{dispose();}};
 
     //convenient coding    
+    public static boolean editing=false;
+    private static DefaultTableModel model;  
+    public static Object superid=null;
+    public static void populateTable(JTable table, String tablename) {
+        model = (DefaultTableModel) table.getModel(); // Initialize model
+
+        String query = "SELECT * FROM "+tablename;
+
+        try (
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            // Clear existing data
+            model.setRowCount(0);
+            model.setColumnCount(0);
+
+            // Get metadata
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            // Add columns to table model
+            for (int i = 1; i <= columnCount; i++) {
+                model.addColumn(metaData.getColumnName(i));
+            }
+
+            // Add rows to table model
+            while (resultSet.next()) {
+                Object[] rowData = new Object[columnCount];
+                for (int i = 1; i <= columnCount; i++) {
+                    rowData[i - 1] = resultSet.getObject(i);
+                }
+                model.addRow(rowData);
+            }
+
+        // Make the table not editable
+        table.setDefaultEditor(Object.class, null);
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }   
     public static int str2int(String s){
         try{
             return Integer.parseInt(s);
@@ -216,6 +377,22 @@ public class Fns {
                 return false;
             }
         }
+    }
+    public static Object getid(JTable table){
+        int selectedRowIndex = table.getSelectedRow();
+        if (selectedRowIndex != -1) {
+            // Get the value of the selected row
+            return table.getValueAt(selectedRowIndex, 0);
+        }else{
+            return -1;
+        }
+    }
+    
+    public static void yez(){
+        JOptionPane.showMessageDialog(frmdashboard, "yez");
+    }
+    public static void naur(){
+        JOptionPane.showMessageDialog(frmdashboard, "naur");
     }
 
     //LOGIN
@@ -280,9 +457,40 @@ public class Fns {
         frmdashboard.dispose();
         authFrame.setLocationRelativeTo(null);
         authFrame.setVisible(true);
+    }    
+    
+    //DASHBOARD        
+    public static void btnPanelChangePRODUCT(JPanel panel){
+        panel.removeAll();
+        //********this pnlProduct is very specific.        
+        // Create an instance of pnlProduct
+        pnlProduct productPanel = new pnlProduct();
+
+        // Add pnlProduct to jPanel2
+        panel.add(productPanel);
+        panel.revalidate();
+        panel.repaint();
+        
+        // note that after calling this function, populate the table with the populateTable() function
+    }
+        
+    public static void search(JTextField searchField, JTable table) {
+        //use this function right before clearsearch everytime there is changes in database for referesh
+
+        String query = searchField.getText();
+        TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(model);
+        table.setRowSorter(tr);
+        tr.setRowFilter(RowFilter.regexFilter(query));
+        
+    }
+    public static void clearsearch(JTextField searchField, JTable table){
+        //also serves as refresh
+        //use this function right after search everytime there is changes in database for referesh
+        searchField.setText("");
+        search(searchField,table);
     }
     
-    //DASHBOARD    
+    //categoary frame
     public static void btnCategory(JButton btn){
         String text = btn.getText();
         if(text.equals("CATEGORY")){
@@ -341,6 +549,9 @@ public class Fns {
         cat.setVisible(false);
         cat.dispose();
     }
+    //end of category frame
+    
+    //quantity buttons
     public static void btnAdd(JTextField tf){
         try{
             String tftext = tf.getText();
@@ -389,7 +600,18 @@ public class Fns {
             tf.setText("0");
         }
     }
-    public static void btnSaveAddProd(java.awt.Dialog theself, JFrame frame, JTextField tfname,JButton btncat,JTextField tfqty,JTextField tfcost,JTextField tfsell,JTextField tfbrand,JTextField tfLST){
+    // end of quantity buttons
+    
+    //new product
+    public static void btnSaveAddProd(java.awt.Dialog theself,
+            JFrame frame,
+            JTextField tfname,
+            JButton btncat,
+            JTextField tfqty,
+            JTextField tfcost,
+            JTextField tfsell,
+            JTextField tfbrand,
+            JTextField tfLST){
         
         String id=String.valueOf(random5int());
         String name = tfname.getText();
@@ -412,27 +634,21 @@ public class Fns {
             }
             
             String insertSQL = "INSERT INTO products (id, name, category, qty, cost, sell, brand, LST) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
-            preparedStatement.setString(1, id);
-            preparedStatement.setString(2, name);
-            preparedStatement.setString(3, category);
-            preparedStatement.setString(4, qty);
-            preparedStatement.setString(5, cost);
-            preparedStatement.setString(6, sell);
-            preparedStatement.setString(7, brand);
-            preparedStatement.setString(8, LST);
+            PreparedStatement pps = connection.prepareStatement(insertSQL);
+            pps.setString(1, id);
+            pps.setString(2, name);
+            pps.setString(3, category);
+            pps.setString(4, qty);
+            pps.setString(5, cost);
+            pps.setString(6, sell);
+            pps.setString(7, brand);
+            pps.setString(8, LST);
             
-            int rowsAffected = preparedStatement.executeUpdate();
-            preparedStatement.close();
+            int rowsAffected = pps.executeUpdate();
+            pps.close();
             
             JOptionPane.showMessageDialog(frame, "Saved successfully!");
-            tfname.setText("");
-            btncat.setText("CATEGORY");
-            tfqty.setText("0");
-            tfcost.setText("");
-            tfsell.setText("");
-            tfbrand.setText("");
-            tfLST.setText("");
+            btnClear();
             
             theself.dispose();
             
@@ -442,7 +658,56 @@ public class Fns {
         
     }
     public static void btnAddProd(JFrame frame){
+        editing = false;
+        
+        enableQtyEdit(editing);
+        
+        btnClear();
+        
         dlgAddProd.setLocationRelativeTo(frame);
         dlgAddProd.setVisible(true);
+    }
+    public static void btnClear(){
+        dlgAddProd.jTextField1.setText("");
+        dlgAddProd.jTextField7.setText("");
+        dlgAddProd.jButton1.setText("CATEGORY");
+        dlgAddProd.jTextField2.setText("");
+        dlgAddProd.jTextField3.setText("");
+        dlgAddProd.jTextField4.setText("");
+        dlgAddProd.jTextField5.setText("");
+    }
+    public static void enableQtyEdit(boolean edit){
+        dlgAddProd.jTextField2.setEditable(edit);
+        dlgAddProd.jButton3.setEnabled(edit);
+        dlgAddProd.jButton4.setEnabled(edit);
+        dlgAddProd.jButton5.setEnabled(edit);
+        dlgAddProd.jButton6.setEnabled(edit);
+    }
+    //end of new product
+    
+    //update product
+    //end of update product
+    
+    public static void saveorup(
+            boolean edit,
+            JTable table,
+            java.awt.Dialog theself,
+            JFrame frame,
+            JTextField tfname,
+            JButton btncat,
+            JTextField tfqty,
+            JTextField tfcost,
+            JTextField tfsell,
+            JTextField tfbrand,
+            JTextField tfLST
+            ){
+        if(edit){
+            btnUpdateProd(table, theself, frame, tfname, btncat, tfqty, tfcost, tfsell, tfbrand, tfLST);
+        }
+        else if(!edit){
+            btnSaveAddProd(theself, frame, tfname, btncat, tfqty, tfcost, tfsell, tfbrand, tfLST);
+        }
+        
+        populateTable(table, "products");
     }
 }

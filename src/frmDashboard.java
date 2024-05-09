@@ -82,7 +82,7 @@ public class frmDashboard extends javax.swing.JFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(28, 28, 28)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(182, Short.MAX_VALUE))
+                .addContainerGap(176, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -117,14 +117,10 @@ public class frmDashboard extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TOD// add your handling code here:
-        // Create an instance of pnlProduct
-        jPanel2.removeAll();
-        pnlProduct productPanel = new pnlProduct();
-
-        // Add pnlProduct to jPanel2
-        jPanel2.add(productPanel);
-        jPanel2.revalidate();
-        jPanel2.repaint();
+        
+        Fns.btnPanelChangePRODUCT(jPanel2);        
+        Fns.populateTable(pnlProduct.jTable1, "products");
+        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
