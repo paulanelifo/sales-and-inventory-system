@@ -88,8 +88,10 @@ public class Fns {
             JTextField tfsell,
             JTextField tfbrand,
             JTextField tfLST){
+        
+        
         try (Statement statement = connection.createStatement()) {
-            Object primaryKeyValue = Fns.getid(table);
+            Object primaryKeyValue = getid(table);
             String query = "SELECT * FROM products WHERE id = '" + primaryKeyValue + "'";
             ResultSet resultSet = statement.executeQuery(query);
 
@@ -121,10 +123,13 @@ public class Fns {
             e.printStackTrace();
         }
     }
-    public static void btnEditProd(JFrame frame){
+    public static void btnEditProd(JFrame frame, JTable table){
+        if(getid(table).equals(-1)){
+            return;
+        }
         editing = true;
         
-        enableQtyEdit(editing);
+        enableQtyEdit(!editing);
         
         dlgAddProd.setLocationRelativeTo(frame);
         dlgAddProd.setVisible(true);
@@ -182,7 +187,6 @@ public class Fns {
     
     //trash codes
     
-    public static StringBuilder cho = new StringBuilder();// = new StringBuilder();    
     public static void paul(){
         Statement statement = null;
         ResultSet resultSet = null;
@@ -236,19 +240,6 @@ public class Fns {
 
         return jPanel1;
     }
-    /*
-    public static void btnread(){
-        cho.append("he");
-        huehue panel = new huehue(cho.toString());
-        //pnlProduct.jPanel2.add(createPanel(cho.toString()));
-        pnlProduct.jPanel2.add(panel);
-        pnlProduct.jPanel2.revalidate();
-        pnlProduct.jPanel2.repaint();
-    }
-    
-    */
-    
-    
     
     
     
@@ -257,11 +248,12 @@ public class Fns {
     
     //begin official
     public static void home(){
-        //btnLogout();//default
         
         authFrame.dispose();
         frmdashboard.setVisible(true);
         user="admin";
+        
+        //btnLogout();//default
     }
     
     private static UserAuth userAuth = new UserAuth();
@@ -660,7 +652,7 @@ public class Fns {
     public static void btnAddProd(JFrame frame){
         editing = false;
         
-        enableQtyEdit(editing);
+        enableQtyEdit(!editing);
         
         btnClear();
         
