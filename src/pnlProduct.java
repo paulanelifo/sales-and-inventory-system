@@ -59,6 +59,7 @@ public class pnlProduct extends javax.swing.JPanel {
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 153, 153));
         setMaximumSize(new java.awt.Dimension(720, 480));
@@ -269,6 +270,13 @@ public class pnlProduct extends javax.swing.JPanel {
                     .addComponent(jLabel16)))
         );
 
+        jButton5.setText("Damage/Loss");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -283,7 +291,10 @@ public class pnlProduct extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6))
+                        .addComponent(jButton6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -318,7 +329,8 @@ public class pnlProduct extends javax.swing.JPanel {
                     .addComponent(jButton8)
                     .addComponent(jButton4)
                     .addComponent(jButton7)
-                    .addComponent(jButton6))
+                    .addComponent(jButton6)
+                    .addComponent(jButton5))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -351,6 +363,7 @@ public class pnlProduct extends javax.swing.JPanel {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         //Fns.btnResupply(Fns.frmdashboard, jTable1);
+        Fns.restockorloss = true;
         Fns.btnResupply(Fns.frmdashboard, jTable1, dlgResupply.jLabel2, dlgResupply.jLabel4, dlgResupply.jLabel6, dlgResupply.jLabel8, dlgResupply.jLabel10, dlgResupply.jLabel12, dlgResupply.jLabel14, dlgResupply.jLabel16);
         Fns.clearsearch(jTextField1, jTable1, jLabel2, jLabel4, jLabel6, jLabel8, jLabel10, jLabel12, jLabel14, jLabel16);
         Fns.populateTable(jTable1, "products");
@@ -393,6 +406,14 @@ public class pnlProduct extends javax.swing.JPanel {
 
     }//GEN-LAST:event_jTable1KeyPressed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        Fns.restockorloss = false;
+        Fns.btnResupply(Fns.frmdashboard, jTable1, dlgResupply.jLabel2, dlgResupply.jLabel4, dlgResupply.jLabel6, dlgResupply.jLabel8, dlgResupply.jLabel10, dlgResupply.jLabel12, dlgResupply.jLabel14, dlgResupply.jLabel16);
+        Fns.clearsearch(jTextField1, jTable1, jLabel2, jLabel4, jLabel6, jLabel8, jLabel10, jLabel12, jLabel14, jLabel16);
+        Fns.populateTable(jTable1, "products");
+    }//GEN-LAST:event_jButton5ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
@@ -400,6 +421,7 @@ public class pnlProduct extends javax.swing.JPanel {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;

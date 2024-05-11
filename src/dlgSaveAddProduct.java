@@ -428,7 +428,7 @@ public class dlgSaveAddProduct extends java.awt.Dialog {
         // TODO add your handling code here:
         //Fns.btnSaveAddProd(this, Fns.frmdashboard, jTextField1, jButton1, jTextField2, jTextField3, jTextField4, jTextField7, jTextField5);
         
-        System.out.println(jButton12.getText());
+        //System.out.println(jButton12.getText());
         Fns.saveorup(
                 Fns.editing,
                 pnlProduct.jTable1,

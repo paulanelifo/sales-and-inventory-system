@@ -19,7 +19,6 @@ NOTES:
             4. Check the 'static' checkbox.
 */
 
-import java.awt.Dimension;
 import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.*;
@@ -44,59 +43,6 @@ public class Fns {
     
     //trash codes
     
-    public static void paul(){
-        Statement statement = null;
-        ResultSet resultSet = null;
-        try {
-            // Create a statement
-            statement = connection.createStatement();
-            // Execute a query to select all rows from the table
-            resultSet = statement.executeQuery("SELECT * FROM products");
-
-            // Iterate through the result set and print each row
-            while (resultSet.next()) {
-                String id = resultSet.getString("id");
-                String name = resultSet.getString("name");
-                String category = resultSet.getString("category");
-                
-                System.out.println("ID: " + id + ", Name: " + name + ", Age: " + category);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                // Close the connection, statement, and result set
-                if (resultSet != null) resultSet.close();
-                if (statement != null) statement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }    
-    public static JPanel createPanel(String labelText) {
-        JPanel jPanel1 = new JPanel();
-        JLabel jLabel1 = new JLabel();
-
-        jPanel1.setBackground(new java.awt.Color(51, 51, 255));
-        jPanel1.setMaximumSize(new java.awt.Dimension(290, 100));
-        jPanel1.setMinimumSize(new java.awt.Dimension(290, 100));
-        jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                JOptionPane.showMessageDialog(null, labelText);
-            }
-        });
-
-        jPanel1.setMaximumSize(new java.awt.Dimension(250, 90));
-        jPanel1.setMinimumSize(new java.awt.Dimension(250, 90));
-        jPanel1.setPreferredSize(new java.awt.Dimension(250, 90));
-
-        jLabel1.setText(labelText);
-
-        jPanel1.add(jLabel1);
-
-        return jPanel1;
-    }
     
     
     
@@ -143,6 +89,7 @@ public class Fns {
     public static dlgTransactCash dlgtransactcash = new dlgTransactCash(frmdashboard, true){{dispose();}};
     
     //convenient coding    
+    public static boolean restockorloss = true;//true if restock, false if loss
     public static boolean editing=false;
     private static DefaultTableModel model;  
     public static Object superid=null;
@@ -236,6 +183,11 @@ public class Fns {
     public static int random6int() {
         Random random = new Random();
         int randomNum = random.nextInt(900000) + 100000;
+        return randomNum;
+    }
+    public static int random7int() {
+        Random random = new Random();
+        int randomNum = random.nextInt(9000000) + 1000000;
         return randomNum;
     }
     public static boolean existing(String tblName, String colName, String input){
@@ -485,7 +437,7 @@ public class Fns {
                 for (int i = 1; i <= columnCount; i++) {
                     System.out.print(resultSet.getObject(i) + "\t");
                 }
-                System.out.println();
+                //System.out.println();
             }
             
         } catch (SQLException e) {
@@ -794,10 +746,11 @@ public class Fns {
                         case 6: tfsell.setText(srs);break;
                         case 7: tfbrand.setText(srs);break;
                         case 8: tfLST.setText(srs);break;
-                        default: System.out.println("wahapen");break;
+                        default: //System.out.println("wahapen");
+                            break;
                     }
                 }
-                System.out.println();
+                //System.out.println();
             }
             
         } catch (SQLException e) {
@@ -917,7 +870,11 @@ public class Fns {
             if(tf.getText().isEmpty()){
                 tobuy=0;
             }
+            
             total = cost*tobuy;
+            if(!restockorloss){
+                total*=-1;
+            }
             lbltotal.setText(String.valueOf(total));
             
             newSupplyCompute(lblqty, tf, lblsap);
@@ -936,7 +893,17 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
             if(tf.getText().isEmpty()){
                 tobuy=0;
             }
-            sap = qty+tobuy;
+            
+            if(restockorloss){
+                sap = qty+tobuy;
+            }else{
+                sap = qty-tobuy;
+            }
+            if(sap<=0){
+                sap = 0;
+                String s = String.valueOf(qty*-1);
+                tf.setText(s);
+            }
             lblsap.setText(String.valueOf(sap));
         }catch(NumberFormatException e){            
         }
@@ -956,6 +923,37 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
             int rowsAffected = pps.executeUpdate();
             pps.close();
             
+            try{
+                
+                String aid = receiptIdResupplyProd();
+                String adate = receiptDateResupplyProd();
+                String aamount = receiptAmountResupplyProd();
+                String adesc = receiptDescriptionResupplyProd();
+                String insertSQL = "INSERT INTO money (id, date, amount, desc) VALUES (?, ?, ?, ?)";
+                pps = connection.prepareStatement(insertSQL);
+                pps.setString(1, aid);
+                pps.setString(2, adate);
+                pps.setString(3, aamount);
+                pps.setString(4, adesc);
+
+                rowsAffected = pps.executeUpdate();
+                pps.close();
+
+                //JOptionPane.showMessageDialog(frmdashboard, "Saved successfully!");
+
+                dlgtransactcash.dispose();
+
+                dlgSaveAddProduct.jTextField6.setText("1");
+                dlgSaveAddProduct.jTextField8.setText("2024");
+                //tfamount.setText("");
+                //ta.setText("");
+
+            }catch(SQLException e){
+                e.printStackTrace();
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(frmdashboard, "Please ensure number input.");
+            }
+            
             JOptionPane.showMessageDialog(theself, "Updated Successfully!");
             theself.dispose();
 
@@ -963,7 +961,7 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
             e.printStackTrace();
         }
     }
-//end of resupply
+    //end of resupply
     
     //pnlReport
     public static long totalCapital(){
@@ -1251,8 +1249,11 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         String amount = receiptAmountSaveProd();
         //desc
         StringBuilder sb = new StringBuilder();
+        sb.append(" - New Product and Stock - \n\n");
         sb.append(dlgSaveAddProduct.jTextField1.getText());
-        sb.append("  -  \n");
+        sb.append("  -  ");
+        sb.append(dlgSaveAddProduct.jTextField7.getText());
+        sb.append("\n");
         String cat = dlgSaveAddProduct.jButton1.getText();
         if(!cat.equals("CATEGORY")){            
             sb.append(cat);
@@ -1265,13 +1266,134 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         String ssell = dlgSaveAddProduct.jTextField4.getText();
         String lst = dlgSaveAddProduct.jTextField5.getText();
         sb.append(sqty);
-        sb.append("x\nCost per piece:\n");
+        sb.append("x\nCost per piece:\nP");
         sb.append(scost);
-        sb.append("\nRetail Price:\n");
+        sb.append("\nRetail Price:\nP");
         sb.append(ssell);        
         sb.append("\n\nLow Stock Threshold:  x");
         String text = String.valueOf(sb);
         return receiptMaker(text, date, amount, sid);
         
     }
+
+    //resupply money
+    public static String receiptIdResupplyProd(){
+        int id = random6int();
+        String sid = String.valueOf(id);
+        while(existing("money","id",sid)){
+            id=random6int();
+            sid=String.valueOf(id);
+        }
+        return sid;
+    }
+    public static String receiptDateResupplyProd(){
+        return datePickerLogic(dlgResupply.jButton12, dlgResupply.jTextField6, dlgResupply.jTextField8);
+    }   
+    public static String receiptAmountResupplyProd(){
+        int namount = -1*(Integer.parseInt(dlgResupply.jLabel19.getText()));
+        if(!restockorloss){
+            namount*=-1;
+        }
+        return String.valueOf(namount);
+    }
+    public static String receiptDescriptionResupplyProd(){
+        //id
+        String sid = receiptIdResupplyProd();
+        //date
+        //String date = translateDateString(receiptDateSaveProd());
+        String date = receiptDateResupplyProd();
+        //amount
+        String amount = receiptAmountResupplyProd();
+        //desc
+        StringBuilder sb = new StringBuilder();
+        if(restockorloss){
+            sb.append(" - Restock - \n\n");            
+        }else{
+            sb.append(" - Damage/Loss - \n\n"); 
+        }
+        sb.append(dlgResupply.jLabel4.getText());
+        sb.append("  -  ");
+        sb.append(dlgResupply.jLabel6.getText());
+        sb.append("\n");
+        String cat = dlgResupply.jLabel8.getText();
+        if(!cat.equals("CATEGORY")){            
+            sb.append(cat);
+            sb.append("\nQuantity: ");
+        }else{
+            sb.append("\nQuantity: ");
+        }
+        String sqty = dlgResupply.jTextField1.getText();
+        String scost = dlgResupply.jLabel12.getText();
+        String ssell = dlgResupply.jLabel14.getText();
+        String lst = dlgResupply.jLabel16.getText();
+        sb.append(sqty);
+        sb.append("x\nCost per piece:\nP");
+        sb.append(scost);
+        sb.append("\nRetail Price:\nP");
+        sb.append(ssell);        
+        sb.append("\n\nLow Stock Threshold:  x");
+        String text = String.valueOf(sb);
+        return receiptMaker(text, date, amount, sid);
+        
+    }
+    
+    //Cashier
+    public static void btnPanelChangeCASHIER(JPanel panel){
+        panel.removeAll();
+        //********this pnlProduct is very specific.        
+        // Create an instance of pnlProduct
+        pnlCashier pnlcashier = new pnlCashier();
+
+        // Add pnlProduct to jPanel2
+        panel.add(pnlcashier);
+        panel.revalidate();
+        panel.repaint();
+        
+        // note that after calling this function, populate the table with the populateTable() function
+    }
+    public static void populateTableCashier() {
+        model = (DefaultTableModel) pnlCashier.jTable1.getModel(); // Initialize model
+
+        String query = "SELECT * FROM products";
+
+        try (
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            // Clear existing data
+            model.setRowCount(0);
+            model.setColumnCount(0);
+
+            // Get metadata
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            for (int i = 1; i <= columnCount; i++) {
+                    //model.addColumn(metaData.getColumnName(i));
+                    switch(i){
+                        case 1:model.addColumn("ID");break;
+                        case 2:model.addColumn("Name");break;
+                        case 3:model.addColumn("Category");break;
+                        case 6:model.addColumn("Price");break;
+                        case 7:model.addColumn("Brand");break;
+                        default:break;
+                    }
+               }
+            
+            // Add rows to table model
+            while (resultSet.next()) {
+                Object[] rowData = new Object[columnCount];
+                for (int i = 1; i <= columnCount; i++) {
+                    rowData[i - 1] = resultSet.getObject(i);
+                }
+                model.addRow(rowData);
+            }
+
+        // Make the table not editable
+        pnlCashier.jTable1.setDefaultEditor(Object.class, null);
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    } 
 }
