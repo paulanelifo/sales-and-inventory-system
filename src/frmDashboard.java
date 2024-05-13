@@ -131,6 +131,7 @@ public class frmDashboard extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        Fns.pnlchangedashdashboard();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -149,7 +150,10 @@ public class frmDashboard extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-        Fns.btnPanelChangeCASHIER(jPanel2);
+        Fns.btnPanelChangeCASHIER(jPanel2);        
+        Fns.populateTableCashier();
+        Fns.updateList();
+        Fns.printList();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
@@ -172,6 +176,6 @@ public class frmDashboard extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JPanel jPanel2;
+    public static javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 }

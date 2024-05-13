@@ -21,6 +21,7 @@ NOTES:
 
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.Random;
@@ -52,11 +53,11 @@ public class Fns {
     //begin official
     public static void home(){
         
-        authFrame.dispose();
-        frmdashboard.setVisible(true);
-        user="admin";
+        //authFrame.dispose();
+        //frmdashboard.setVisible(true);
+        //user="admin";
         
-        //btnLogout();//default
+        btnLogout();//default
     }
     
     private static UserAuth userAuth = new UserAuth();
@@ -231,7 +232,7 @@ public class Fns {
         DecimalFormat formatter = new DecimalFormat("#,###");
         return formatter.format(number);
     }
-    public static String translateDateString(String dateString) {
+    public static String dateLong(String dateString) {
         String monthName = "";
         String day = dateString.substring(2, 4);
         String year = dateString.substring(4);
@@ -254,6 +255,60 @@ public class Fns {
 
         return monthName + " " + day + ", " + year;
     }
+    public static String datePickerRaw(JButton btn, JTextField day, JTextField yr) {
+        //use this function right before clearsearch everytime there is changes in database for referesh
+        String mm;
+        String dd;
+        String yyyy;
+        StringBuilder deserch = new StringBuilder();
+        try{
+            //month
+            String month = btn.getText();
+            switch(month){
+                case "January": mm="01"; break;
+                case "February": mm="02"; break;
+                case "March": mm="03"; break;
+                case "April": mm="04"; break;
+                case "May": mm="05"; break;
+                case "June": mm="06"; break;
+                case "July": mm="07"; break;
+                case "August": mm="08"; break;
+                case "September": mm="09"; break;
+                case "October": mm="10"; break;
+                case "November": mm="11"; break;
+                case "December": mm="12"; break;
+                default: mm="01";btn.setText("January");break;
+            }
+            //day
+            int iday = Integer.parseInt(day.getText());
+            switch (iday){
+                case 1:dd="01";break;
+                case 2:dd="02";break;
+                case 3:dd="03";break;
+                case 4:dd="04";break;
+                case 5:dd="05";break;
+                case 6:dd="06";break;
+                case 7:dd="07";break;
+                case 8:dd="08";break;
+                case 9:dd="09";break;    
+                default: dd="01";break;
+            }
+            if(iday>=10 && iday<=31){
+                dd = String.valueOf(iday);
+            }
+            //year
+            yyyy = yr.getText();
+            deserch.append(mm);
+            deserch.append(dd);
+            deserch.append(yyyy);
+        }catch(NumberFormatException e){
+            day.setText("1");
+            yr.setText("2024");
+        }
+        
+        return String.valueOf(deserch);
+        
+    }
     public static int intforcezero(String s){
         try{
             return Integer.parseInt(s);
@@ -261,6 +316,21 @@ public class Fns {
             return 0;
         }
     }
+    public static String receiptMaker(String text, String dateraw, String amount, String id){
+        StringBuilder sb = new StringBuilder();
+        sb.append("*****RECEIPT*****\n\n");
+        sb.append(text);
+        sb.append("\n\nDate:\n");
+        sb.append(dateLong(dateraw));
+        sb.append("\nAmount:\nP");
+        sb.append(moneyComma(Long.parseLong(amount)));
+        sb.append("\nTransaction Reference ID:\n");
+        sb.append(id);
+        sb.append("\n\n*****************");
+        String s = String.valueOf(sb);
+        return s;
+    }
+
     
     public static void yez(){
         JOptionPane.showMessageDialog(frmdashboard, "yez");
@@ -307,6 +377,7 @@ public class Fns {
             username.setText("");
             password.setText("");
             authFrame.dispose();
+            pnlchangedashdashboard();
             frmdashboard.setVisible(true);
         }else{
             JOptionPane.showMessageDialog(frm, "Login failed.");
@@ -628,7 +699,7 @@ public class Fns {
                 id = String.valueOf(random5int());
             }
             
-            String insertSQL = "INSERT INTO products (id, name, category, qty, cost, sell, brand, LST) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String insertSQL = "INSERT INTO products (id, name, category, qty, cost, sell, brand, LST, sold) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pps = connection.prepareStatement(insertSQL);
             pps.setString(1, id);
             pps.setString(2, name);
@@ -638,6 +709,7 @@ public class Fns {
             pps.setString(6, sell);
             pps.setString(7, brand);
             pps.setString(8, LST);
+            pps.setString(9, "0");
             
             int rowsAffected = pps.executeUpdate();
             pps.close();
@@ -910,6 +982,7 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
     }
     public static void btnUpdResupply(java.awt.Dialog theself, JLabel lblqty, JLabel lblid){
         try{
+            //update quantity
             String qty = lblqty.getText();
             String id = lblid.getText();
             if(!cannum(qty)){
@@ -923,6 +996,7 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
             int rowsAffected = pps.executeUpdate();
             pps.close();
             
+            //update money record
             try{
                 
                 String aid = receiptIdResupplyProd();
@@ -1045,64 +1119,10 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         }
     }
     
-    public static String datePickerLogic(JButton btn, JTextField day, JTextField yr) {
-        //use this function right before clearsearch everytime there is changes in database for referesh
-        String mm;
-        String dd;
-        String yyyy;
-        StringBuilder deserch = new StringBuilder();
-        try{
-            //month
-            String month = btn.getText();
-            switch(month){
-                case "January": mm="01"; break;
-                case "February": mm="02"; break;
-                case "March": mm="03"; break;
-                case "April": mm="04"; break;
-                case "May": mm="05"; break;
-                case "June": mm="06"; break;
-                case "July": mm="07"; break;
-                case "August": mm="08"; break;
-                case "September": mm="09"; break;
-                case "October": mm="10"; break;
-                case "November": mm="11"; break;
-                case "December": mm="12"; break;
-                default: mm="01";btn.setText("January");break;
-            }
-            //day
-            int iday = Integer.parseInt(day.getText());
-            switch (iday){
-                case 1:dd="01";break;
-                case 2:dd="02";break;
-                case 3:dd="03";break;
-                case 4:dd="04";break;
-                case 5:dd="05";break;
-                case 6:dd="06";break;
-                case 7:dd="07";break;
-                case 8:dd="08";break;
-                case 9:dd="09";break;    
-                default: dd="01";break;
-            }
-            if(iday>=10 && iday<=31){
-                dd = String.valueOf(iday);
-            }
-            //year
-            yyyy = yr.getText();
-            deserch.append(mm);
-            deserch.append(dd);
-            deserch.append(yyyy);
-        }catch(NumberFormatException e){
-            day.setText("1");
-            yr.setText("2024");
-        }
-        
-        return String.valueOf(deserch);
-        
-    }
     public static void btnMoSearch(JButton btn, JTextField day, JTextField yr, JTable table) {
         //use this function right before clearsearch everytime there is changes in database for referesh
         
-        String query = datePickerLogic(btn, day, yr);
+        String query = datePickerRaw(btn, day, yr);
         TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(model);
         table.setRowSorter(tr);
         tr.setRowFilter(RowFilter.regexFilter(query));
@@ -1141,8 +1161,8 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         if(!cannum(day.getText())||!cannum(yr.getText())||!cannum(tfamount.getText())){
             JOptionPane.showMessageDialog(frmdashboard,"Please ensure number input.");
         }
-        String date = datePickerLogic(btn, day, yr);
-        String longdate = translateDateString(date);
+        String date = datePickerRaw(btn, day, yr);
+        String longdate = dateLong(date);
         String amount="";
         if(cannum(tfamount.getText())){
             amount=tfamount.getText();
@@ -1207,20 +1227,6 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
             }
         }
     }
-    public static String receiptMaker(String text, String dpl, String amount, String id){
-        StringBuilder sb = new StringBuilder();
-        sb.append("*****RECEIPT*****\n\n");
-        sb.append(text);
-        sb.append("\n\nDate:\n");
-        sb.append(translateDateString(dpl));
-        sb.append("\nAmount:\nP");
-        sb.append(moneyComma(Long.parseLong(amount)));
-        sb.append("\nTransaction Reference ID:\n");
-        sb.append(id);
-        sb.append("\n\n*****************");
-        String s = String.valueOf(sb);
-        return s;
-    }
     public static String receiptIdSaveProd(){
         int id = random6int();
         String sid = String.valueOf(id);
@@ -1231,7 +1237,7 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         return sid;
     }
     public static String receiptDateSaveProd(){
-        return datePickerLogic(dlgSaveAddProduct.jButton12, dlgSaveAddProduct.jTextField6, dlgSaveAddProduct.jTextField8);
+        return datePickerRaw(dlgSaveAddProduct.jButton12, dlgSaveAddProduct.jTextField6, dlgSaveAddProduct.jTextField8);
     } 
     public static String receiptAmountSaveProd(){
         int cost = intforcezero(dlgSaveAddProduct.jTextField3.getText());
@@ -1243,7 +1249,7 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         //id
         String sid = receiptIdSaveProd();
         //date
-        //String date = translateDateString(receiptDateSaveProd());
+        //String date = dateLong(receiptDateSaveProd());
         String date = receiptDateSaveProd();
         //amount
         String amount = receiptAmountSaveProd();
@@ -1287,7 +1293,7 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         return sid;
     }
     public static String receiptDateResupplyProd(){
-        return datePickerLogic(dlgResupply.jButton12, dlgResupply.jTextField6, dlgResupply.jTextField8);
+        return datePickerRaw(dlgResupply.jButton12, dlgResupply.jTextField6, dlgResupply.jTextField8);
     }   
     public static String receiptAmountResupplyProd(){
         int namount = -1*(Integer.parseInt(dlgResupply.jLabel19.getText()));
@@ -1300,7 +1306,7 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         //id
         String sid = receiptIdResupplyProd();
         //date
-        //String date = translateDateString(receiptDateSaveProd());
+        //String date = dateLong(receiptDateSaveProd());
         String date = receiptDateResupplyProd();
         //amount
         String amount = receiptAmountResupplyProd();
@@ -1382,10 +1388,12 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
             
             // Add rows to table model
             while (resultSet.next()) {
-                Object[] rowData = new Object[columnCount];
-                for (int i = 1; i <= columnCount; i++) {
-                    rowData[i - 1] = resultSet.getObject(i);
-                }
+                Object[] rowData = new Object[5]; // Since you only want 5 columns
+                rowData[0] = resultSet.getObject(1); // ID
+                rowData[1] = resultSet.getObject(2); // Name
+                rowData[2] = resultSet.getObject(3); // Category
+                rowData[3] = resultSet.getObject(6); // Price
+                rowData[4] = resultSet.getObject(7); // Brand
                 model.addRow(rowData);
             }
 
@@ -1396,4 +1404,384 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
             e.printStackTrace();
         }
     } 
+    public static ArrayList<ArrayList<Integer>> cart= new ArrayList<>();
+    public static void btnAddProdID(){
+        //declare
+        Object pkey = Fns.getid(pnlCashier.jTable1);
+        if(pkey.equals(-1)){
+            return;}
+        int intpkey = Integer.parseInt(String.valueOf(pkey));
+        //check if exists
+        boolean idExists = false;
+        for (ArrayList<Integer> innerList : cart) {
+            if (innerList.get(0) == intpkey) {
+                innerList.set(1, innerList.get(1) + 1); // Increment quantity by 1
+                idExists = true;
+                break;
+            }}        
+        if(!idExists){            
+            addeCart(intpkey, 1);}
+        //updatelist to JList component
+        updateList();
+        Fns.printList();
+    }
+    public static void btnAddProdIDMulti(){
+        //declare
+        Object pkey = Fns.getid(pnlCashier.jTable1);
+        if(pkey.equals(-1)){
+            return;}
+        int intpkey = Integer.parseInt(String.valueOf(pkey));
+        //check if exists
+        boolean idExists = false;
+        String s="";
+        int n=0;
+        while(!cannum(s)){
+            s=JOptionPane.showInputDialog(frmdashboard, "Enter quantity:");
+        }
+        n = Integer.parseInt(s);
+        for (ArrayList<Integer> innerList : cart) {
+            if (innerList.get(0) == intpkey) {
+                innerList.set(1, innerList.get(1) + n); // Increment quantity by 1
+                idExists = true;
+                break;
+            }}        
+        if(!idExists){
+            addeCart(intpkey, n);}
+        //updatelist to JList component
+        updateList();
+        Fns.printList();
+    }
+    public static void deleteZeroQuantityEntries(ArrayList<ArrayList<Integer>> twoDArrayList) {
+        for (int i = 0; i < twoDArrayList.size(); i++) {
+            if (twoDArrayList.get(i).get(1) == 0) {
+                twoDArrayList.remove(i);
+                i--; // Decrement i as we removed an element
+            }
+        }
+    }
+    public static void updateList(){
+        deleteZeroQuantityEntries(cart);
+        // Convert cart to a String array
+        int temp=-1;
+        if(pnlCashier.jList1.getSelectedIndex()!=-1){
+            temp = pnlCashier.jList1.getSelectedIndex();            
+        }
+        String[] newData = new String[cart.size()];
+        for (int i = 0; i < cart.size(); i++) {
+            int id = cart.get(i).get(0);
+            newData[i] = String.valueOf(id);
+        }         
+        
+        // Set the new array as the data for the JList
+        pnlCashier.jList1.setListData(newData);
+        pnlCashier.jList1.setSelectedIndex(temp);
+    }
+    public static void addeCart(int id, int quantity) {
+        ArrayList<Integer> innerList = new ArrayList<>();
+        innerList.add(id);
+        innerList.add(quantity);
+        cart.add(innerList);
+    }
+    public static void btnRemoveEntry(){
+        int selectedIndex = pnlCashier.jList1.getSelectedIndex();
+        // Check if an item is selected
+        if (selectedIndex != -1) {
+            cart.remove(selectedIndex);
+        }
+        updateList();
+        Fns.printList();
+        
+    }
+    public static void btnRemoveOne(){
+        // Get the selected index
+        int selectedIndex = pnlCashier.jList1.getSelectedIndex();
+
+        // Check if an item is selected
+        if (selectedIndex != -1) {
+            int idToRemove = cart.get(selectedIndex).get(0);
+            int quantity = cart.get(selectedIndex).get(1);
+
+            // If quantity is greater than 1, decrement the quantity by 1
+            // If quantity is 1, remove the item from the cart
+            if (quantity > 1) {
+                cart.get(selectedIndex).set(1, quantity - 1);
+            } else {
+                cart.remove(selectedIndex);
+            }
+
+            updateList(); // Update the JList with the new contents of the cart
+            Fns.printList();
+        }
+    }
+    public static int purchaseTotal=0;
+    public static StringBuilder purchaseSB = new StringBuilder();
+    public static int profit = 0;
+    public static int supercost = 0;
+    public static int supertotal = 0;
+    public static void printList(){
+        purchaseTotal = 0;
+        supercost = 0;
+        supertotal = 0;
+        purchaseSB.setLength(0);
+        try (Statement statement = connection.createStatement()) {
+                // Iterate through each value in the ArrayList                
+                for (ArrayList<Integer> innerList : cart) {
+                    //System.out.println(innerList.get(0));
+                    Object primaryKeyValue = innerList.get(0);
+                    
+                    String query = "SELECT * FROM products WHERE id = '" + primaryKeyValue + "'";
+                    ResultSet resultSet = statement.executeQuery(query);
+
+                    // Assuming you have a method to get column names
+                    ResultSetMetaData metaData = resultSet.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    
+                    double tempTotal=0;
+                    // Print row data            
+                    if (resultSet.next()) {
+                        String srs = "";
+                        for (int i = 1; i <= columnCount; i++) {
+                            srs = String.valueOf(resultSet.getObject(i));
+                            switch(i){
+                                case 1:
+                                    purchaseSB.append(srs);
+                                    purchaseSB.append("  -  ");
+                                    break;
+                                case 2: 
+                                    purchaseSB.append(srs);
+                                    break;
+                                case 6://brand                                    
+                                    purchaseSB.append("  ");
+                                    purchaseSB.append(String.valueOf(resultSet.getObject(7)));
+                                    //sb.append("BRAND");
+                                    break;
+                                case 7://price                                    
+                                    tempTotal = Integer.parseInt(String.valueOf(resultSet.getObject(6)))*innerList.get(1);
+                                    purchaseTotal+=tempTotal;
+                                    purchaseSB.append("\nP ");
+                                    purchaseSB.append(tempTotal);
+                                    purchaseSB.append("   - x");
+                                    purchaseSB.append(innerList.get(1));
+                                    purchaseSB.append(" ... P ");
+                                    purchaseSB.append(resultSet.getObject(6));
+                                    supercost+=Integer.parseInt(String.valueOf(resultSet.getObject(5)))*innerList.get(1);
+                                    break;
+                                default: break;
+                            }
+                            int cost = Integer.parseInt(String.valueOf(resultSet.getObject(5)));
+                            //supercost+=cost;
+                        }
+                    }
+                    purchaseSB.append("\n\n");                    
+                }
+                if(!(purchaseTotal==0)){
+                    purchaseSB.append("Total:\nP ");     
+                    purchaseSB.append(purchaseTotal);
+                    supertotal=purchaseTotal;
+                }
+                pnlCashier.jTextArea1.setText(String.valueOf(purchaseSB));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+    }
+    public static void btnClearCashier(){
+        // TODO add your handling code here:
+        if(cart.isEmpty()){return;}
+        int option = JOptionPane.showConfirmDialog(Fns.frmdashboard, "Are you sure you want to clear?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.NO_OPTION) {return;}
+        clearCashier();
+    }
+    public static void clearCashier(){        
+        while(!Fns.cart.isEmpty()){
+            Fns.cart.remove(Fns.cart.size()-1);
+        }
+        Fns.updateList();
+        Fns.printList();
+    }
+    public static void btnCheckout(){
+        try(Statement statement = Fns.connection.createStatement()){
+            //check for insufficient stock
+            for (ArrayList<Integer> innerList : Fns.cart) {
+                //innerList.get(0) for id, and get(1) for quantity
+                Object primaryKeyValue = innerList.get(0);
+                
+                String query = "SELECT * FROM products WHERE id = '" + primaryKeyValue + "'";
+                ResultSet resultSet = statement.executeQuery(query);
+
+                // Assuming you have a method to get column names
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();                
+                String name = String.valueOf(resultSet.getObject(2));
+                //iterate each element or the cart arraylist
+                if(resultSet.next()){
+                    //use resultSet.getObject(index)
+                    
+                    //check if stock available
+                    int stock = Integer.parseInt(String.valueOf(resultSet.getObject(4)));
+                    int qtybuy = innerList.get(1);
+                    boolean hasStock = stock>=qtybuy;
+                    //insufficient stock then return
+                    if(!hasStock){
+                        if(stock==0){
+                            JOptionPane.showMessageDialog(Fns.frmdashboard, primaryKeyValue+" "+name+" has no stock left. Item will be removed.");
+                        }else{
+                            JOptionPane.showMessageDialog(Fns.frmdashboard, primaryKeyValue+" "+name+" has insufficient stock. Remaining available stock is now set.");
+                        }
+                        innerList.set(1, stock);                        
+                        Fns.updateList();
+                        Fns.printList();
+                        return;
+                    }
+                    //delete if zero stock
+                    else if(stock==0){
+                        //
+                        cart.remove(Integer.parseInt(String.valueOf(primaryKeyValue)));
+                        Fns.updateList();
+                        Fns.printList();
+                        return;
+                    }
+                }                
+            } 
+            
+            //check if cash is enough
+            int inputcash = Integer.parseInt(JOptionPane.showInputDialog(frmdashboard,"Enter cash amount:"));
+            if (inputcash<purchaseTotal){
+                JOptionPane.showMessageDialog(frmdashboard, "Insufficient cash!");
+                return;
+            }
+            
+            //proceed transaction
+            for (ArrayList<Integer> innerList : Fns.cart) {
+                //innerList.get(0) for id, and get(1) for quantity
+                Object primaryKeyValue = innerList.get(0);
+                
+                String query = "SELECT * FROM products WHERE id = '" + primaryKeyValue + "'";
+                ResultSet resultSet = statement.executeQuery(query);
+
+                // Assuming you have a method to get column names
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();                
+                String name = String.valueOf(resultSet.getObject(2));
+                //iterate each element or the cart arraylist
+                if(resultSet.next()){
+                    //use resultSet.getObject(index)
+                    
+                    //check if stock available
+                    int stock = Integer.parseInt(String.valueOf(resultSet.getObject(4)));
+                    int sold = Integer.parseInt(String.valueOf(resultSet.getObject(9)));
+                    
+                    int qtybuy = innerList.get(1);
+                    
+                    //update to db
+                    int newStock = stock-qtybuy;                    
+                    String updateSQL = "UPDATE products SET qty = ?, sold = ? WHERE id = ?";
+                    PreparedStatement pps = Fns.connection.prepareStatement(updateSQL);
+                    pps.setString(1, String.valueOf(newStock));//qty
+                    pps.setString(2, String.valueOf(sold+qtybuy));//sold
+                    pps.setString(3, String.valueOf(primaryKeyValue));//id            
+                    int rowsAffected = pps.executeUpdate();
+                    pps.close();
+                }                
+            }    
+            //create reciept
+            StringBuilder textPurchaseSB = new StringBuilder();
+            textPurchaseSB.append(" - Purchase - ");
+            textPurchaseSB.append(String.valueOf(purchaseSB));            
+            textPurchaseSB.append("\n\nCash:\nP ");
+            textPurchaseSB.append(inputcash);
+            textPurchaseSB.append("\nChange:\nP ");
+            int change = inputcash-purchaseTotal;
+            textPurchaseSB.append(change);
+            String basictext = String.valueOf(textPurchaseSB);
+            String rawdate = datePickerRaw(pnlCashier.jButton1, pnlCashier.jTextField1, pnlCashier.jTextField2);
+            String amount = String.valueOf(purchaseTotal);
+            String id = String.valueOf(random6int());
+            String text = receiptMaker(basictext, rawdate, amount, id);
+            //save receipt to database
+            String insertSQL = "INSERT INTO money (id, date, amount, desc) VALUES (?, ?, ?, ?)";
+            PreparedStatement pps = connection.prepareStatement(insertSQL);
+            pps.setString(1, id);
+            pps.setString(2, rawdate);
+            pps.setString(3, amount);
+            pps.setString(4, text);
+            
+            int rowsAffected = pps.executeUpdate();
+            pps.close();
+            
+            //save receipt to database
+            insertSQL = "INSERT INTO cashier (id, total, cash, change, cost, profit, dsc, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            pps = connection.prepareStatement(insertSQL);
+            String cid = String.valueOf(random7int());
+            while(existing("cashier", "id", cid)){
+                cid = String.valueOf(random7int());
+            }
+            pps.setString(1, cid);//id
+            pps.setString(2, String.valueOf(supertotal));//total
+            pps.setString(3, String.valueOf(inputcash));//cash
+            pps.setString(4, String.valueOf(change));//change
+            pps.setString(5, String.valueOf(supercost));//cost
+            int profit = purchaseTotal-supercost;
+            pps.setString(6, String.valueOf(profit));//profit
+            pps.setString(7, String.valueOf(purchaseSB));//desc
+            pps.setString(8, rawdate);
+            
+            rowsAffected = pps.executeUpdate();
+            pps.close();
+            
+            
+            purchaseTotal=0;
+            supercost=0;
+            purchaseSB.setLength(0);
+            
+            //updatelist to JList component
+            clearCashier();
+            JOptionPane.showMessageDialog(frmdashboard, "Purchase success!");
+            updateList();
+            Fns.printList();
+            
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+        
+    }
+    public static void btnViewProfit(){
+        int hypercost = 0;
+        int hyperprofit = 0;
+        try(Statement statement = Fns.connection.createStatement()){
+            String date = datePickerRaw(pnlReport.jButton1, pnlReport.jTextField1, pnlReport.jTextField2);
+            String query = "SELECT * FROM cashier WHERE date = '"+date+"'";
+            ResultSet resultSet = statement.executeQuery(query);            
+            
+            while(resultSet.next()){
+                int cost = resultSet.getInt("cost");
+                int profit = resultSet.getInt("profit");                
+                hypercost+=cost;
+                hyperprofit+=profit;
+            }
+            
+            String s = "Date: "+dateLong(date)+"\n\n"
+                    +"Total Cost: "+hypercost
+                    +"\nTotal Profit: "+hyperprofit
+                    ;
+            
+            JOptionPane.showMessageDialog(frmdashboard, s);
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+    
+    //dashdashboard
+    public static void pnlchangedashdashboard(){
+        frmDashboard.jPanel2.removeAll();   
+        // Create an instance of pnlProduct
+        pnlDashdashboard pnldboard = new pnlDashdashboard();
+        
+        
+        // Add pnlProduct to jPanel2
+        frmDashboard.jPanel2.add(pnldboard);
+        frmDashboard.jPanel2.revalidate();
+        frmDashboard.jPanel2.repaint();
+    }
 }
