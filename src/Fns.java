@@ -28,35 +28,14 @@ import java.util.Random;
 import javax.swing.table.TableRowSorter;
 public class Fns {
     
-    
-    //test codes
-    
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //trash codes
-    
-    
-    
-    
-    
-    
-    
     //begin official
     public static void home(){
-        
-        //authFrame.dispose();
-        //frmdashboard.setVisible(true);
-        //user="admin";
-        
+        /*
+        authFrame.dispose();
+        pnlchangedashdashboard();
+        frmdashboard.setVisible(true);
+        user="admin";
+        */
         btnLogout();//default
     }
     
@@ -1784,4 +1763,28 @@ Fns.totalCostCompute(jLabel12, jTextField1, jLabel19);
         frmDashboard.jPanel2.revalidate();
         frmDashboard.jPanel2.repaint();
     }
+    
+    
+    
+public static void lstsearch(int columnAIndex, int columnBIndex, JTable table) {
+    TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(model);
+    table.setRowSorter(tr);
+    tr.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
+        @Override
+        public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
+            DefaultTableModel tableModel = entry.getModel();
+            int row = entry.getIdentifier();
+
+            // Get values from column A and column B
+            int columnAValue = (int) tableModel.getValueAt(row, columnAIndex);
+            int columnBValue = (int) tableModel.getValueAt(row, columnBIndex);
+
+            // Filter condition
+            return columnAValue < columnBValue;
+        }
+    });
+}
+
+
+    
 }
